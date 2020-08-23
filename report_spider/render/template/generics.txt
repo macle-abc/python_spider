@@ -1,0 +1,155 @@
+import scrapy
+from cssselect.parser import SelectorSyntaxError
+from scrapy.selector.unified import Selector
+
+from report_spider.items import ReportSpiderLoader, ReportSpiderItem
+from report_spider import search
+
+from urllib import parse
+import re
+
+
+class {% class_name %}(scrapy.Spider):
+    name = "{% name %}"
+    allowed_domains = ['{% start_url %}']
+    start_urls = ['http://{% start_url %}']
+
+    def parse(self, response):
+        detail_info = self.__try_find_element(response,
+                                              '{% detail_meta_rule.xpath %}',
+                                              '{% detail_meta_rule.css %}',
+                                              r'{% detail_meta_rule.re_pattern %}')
+        for detail in detail_info:
+            detail_title = self.__try_find_element(detail,
+                                                   '{% detail_meta_rule.title_rule.xpath %}',
+                                                   '{% detail_meta_rule.title_rule.css %}',
+                                                   r'{% detail_meta_rule.title_rule.re_pattern %}')
+            if not detail_title:
+                print("Warring!详情页标题获取失败!")
+            else:
+                if len(detail_title) != 1:
+                    raise ValueError("请修改规则以满足详情页标题精确匹配出一个结果!")
+                if not self.__check_detail_title_valid(detail_title[0]):
+                    continue
+                else:
+                    detail_link = self.__try_find_element(detail,
+                                                          '{% detail_meta_rule.link_rule.xpath %}',
+                                                          '{% detail_meta_rule.link_rule.css %}',
+                                                          r'{% detail_meta_rule.link_rule.re_pattern %}')
+                    if not detail_link:
+                        print("Warring!详情页链接获取失败!")
+                        continue
+                    else:
+                        if len(detail_link) != 1:
+                            raise ValueError("请修改规则以满足详情页链接精确匹配出一个结果!")
+                        detail_link = parse.urljoin(response.url, detail_link.extract_first())
+                        yield scrapy.Request(detail_link, self.parse_detail, dont_filter=True)
+        next_url = self.__try_find_element(response,
+                                           '{% next_url_rule.xpath %}',
+                                           '{% next_url_rule.css %}',
+                                           r'{% next_url_rule.re_pattern %}')
+        if next_url:
+            if len(next_url) != 1:
+                raise ValueError("请修改规则以满足获取下一页链接精确匹配出一个结果!")
+            next_url = parse.urljoin(response.url, next_url.extract_first())
+            if next_url != 'javascript:void(0);':
+                yield scrapy.Request(next_url, self.parse, dont_filter=True)
+
+    def parse_detail(self, response):
+        article = self.__try_find_element(response,
+                                          '{% detail.article_rule.xpath %}',
+                                          '{% detail.article_rule.css %}',
+                                          r'{% detail.article_rule.re_pattern %}')
+        article = article.extract()
+        article = "".join([item.strip() for item in article if item.strip()])
+        if not search.main(article):
+            return None
+        item = ReportSpiderLoader(ReportSpiderItem(), response=response)
+        self.__set_item_value(item, "title",
+                              "Warring!标题获取失败!",
+                              "请修改规则以满足标题精确匹配出一个结果!",
+                              response,
+                              '{% detail.title_rule.xpath %}',
+                              '{% detail.title_rule.css %}',
+                              r'{% detail.title_rule.re_pattern %}')
+        self.__set_item_value(item, "speaker",
+                              "Warring!报告人获取失败!",
+                              "请修改规则以满足报告人精确匹配出一个结果!",
+                              response,
+                              '{% detail.speaker_rule.xpath %}',
+                              '{% detail.speaker_rule.css %}',
+                              r'{% detail.speaker_rule.re_pattern %}')
+        self.__set_item_value(item, "holding_time",
+                              "Warring!举行时间获取失败!",
+                              "请修改规则以满足举行时间精确匹配出一个结果!",
+                              response,
+                              '{% detail.holding_time_rule.xpath %}',
+                              '{% detail.holding_time_rule.css %}',
+                              r'{% detail.holding_time_rule.re_pattern %}')
+        self.__set_item_value(item, "place",
+                              "Warring!报告地点获取失败!",
+                              "请修改规则以满足举办地点精确匹配出一个结果!",
+                              response,
+                              '{% detail.place_rule.xpath %}',
+                              '{% detail.place_rule.css %}',
+                              r'{% detail.place_rule.re_pattern %}')
+        self.__set_item_value(item, "release_time",
+                              "Warring!发布时间获取失败!",
+                              "请修改规则以满足发布时间精确匹配出一个结果!",
+                              response,
+                              '{% detail.release_time_rule.xpath %}',
+                              '{% detail.release_time_rule.css %}',
+                              r'{% detail.release_time_rule.re_pattern %}')
+        item.add_value("university", '{% detail.university %}')
+        item.add_value("detail_link", response.url)
+        yield item.load_item()
+
+    @staticmethod
+    def __try_find_element(response, element_xpath, element_css, element_re_pattern, element_find_func=None) -> list:
+        try:
+            element = response.xpath(element_xpath)
+        except ValueError as e:
+            raise ValueError("非法的xpath表达式!")
+        if not element:
+            try:
+                element = response.css(element_css)
+            except SelectorSyntaxError as e:
+                raise SelectorSyntaxError("非法的css选择器!")
+            if not element:
+                re_pattern = re.compile(element_re_pattern)
+                element = re.search(re_pattern, response.text)
+                if not element:
+                    if element_find_func is None:
+                        raise ValueError(f"xpath,css,正则表达式匹配失败!请修改配置文件中的匹配规则或实现自定义函数!")
+                    elif not callable(element_find_func):
+                        raise ValueError(f"element_find_func必须是一个可调用对象!")
+                    element = element_find_func(response)
+                    if not isinstance(element, list):
+                        raise ValueError(f"{element_find_func.__name__}必须返回list类型!")
+                    else:
+                        return element
+                else:
+                    return [element.groupdict()]
+            else:
+                return element
+        else:
+            return element
+
+    @staticmethod
+    def __check_detail_title_valid(detail_title: Selector) -> bool:
+        if not isinstance(detail_title, Selector):
+            raise TypeError(f"detail_title必须是Selector类型")
+        else:
+            loc_title = detail_title.extract()
+        # 自定义检验规格
+        return True
+
+    def __set_item_value(self, item, element_name, warring_message, exception_message, *args):
+        element = self.__try_find_element(*args)
+        if element:
+            if len(element) != 1:
+                raise ValueError(exception_message)
+            else:
+                item.add_value(element_name, element.extract_first())
+        else:
+            print(warring_message)

@@ -1,0 +1,153 @@
+BDK
+Base Derivation Key
+基础导出密钥
+CS
+Configure Security
+安全配置
+CSC
+Card Security Codes
+卡安全码
+CSCK
+Card Security Codes Key
+卡安全码密钥
+CVK
+Card Validation Key
+卡校验密钥
+CVV
+Card Validatoin Value
+卡校验值
+HSM
+Host Security Module
+主机加密模块
+KCV
+Key Check Value
+密钥校验值
+IV
+Initialisation Vector
+初始化向量
+LMK
+Local Master Key
+本地主密钥
+MAC
+Messenge Authentication Code
+信息认证码
+KSN
+Key serial number
+密钥序列号
+PIN
+Personal Identification Number
+个人身份号码
+PK
+Public Key
+公钥
+Private Key
+密钥
+PVK
+PIN Verification Key
+PIN校验密钥
+PVKI
+PIN
+Verification Key Indicator
+PIN校验密钥索引
+PVV
+PIN Verification Value
+PIN校验值
+TAK
+Terminal Authentication Key
+终端认证密钥
+TMK
+Terminal Master Key
+终端主密钥
+TPK
+Terminal PIN Key
+终端PIN密钥
+WWK
+Watchword Key
+口令密钥
+ZAK
+Zone Authentication Key
+区域认证密钥
+ZEK
+Zone Encryption Key
+区域加密密钥
+ZMK
+Zone Master Key
+区域主密钥
+ZPK
+Zone PIN Key
+区域PIN密钥
+AES
+高级加密标准
+Advanced Encryption Standard
+非对称密码术
+Asymmetric cryptography
+认证
+Authentication
+生物测量学
+Biometrics
+生日攻击
+Birthday attack
+盲签名方案
+Blind signature scheme
+分组密码
+Block cipher
+蛮力攻击
+Brute force attack
+CBC
+Cipher Block Chaining
+认证中心
+Certifying authority
+CFM
+密码反馈方式
+Cipher Feedback Mode
+隐蔽通道
+Covert channel
+密码分析
+密码系统
+字典攻击
+Cryptanalysis
+Cryptosystem
+Dictionary attack
+数字证书
+Digital
+certificate
+数据加密标准
+DES
+Data Encryption Standard
+解密
+Decryption
+数字现金
+数字信封
+Digital envelope
+数字签名
+Digital signature
+数字时间戳记
+Digital timestamp
+加密
+Encryption
+Entropy
+平均信息量
+穷举搜索
+散列函数
+Hash function
+Exhaustive search
+信息安全
+密码学
+Information Security
+Cryptography
+Network Security
+网络安全
+NIDS and NIPS
+IPS
+入侵防御
+IDS
+入侵检测
+Proxies
+代理
+Port Security
+端口安全
+Flood guards
+Loop protection
+流量攻击防护
+Access controls
+访问控制

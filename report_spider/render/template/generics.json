@@ -1,0 +1,57 @@
+{
+  "start_url": "",
+  "name": "",
+  "detail_meta_rule": {
+    "xpath": "",
+    "css": "",
+    "re_pattern": "",
+    "title_rule": {
+     "xpath": "",
+     "css": "",
+     "re_pattern": ""
+    },
+    "link_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    }
+  },
+  "next_url_rule": {
+    "xpath": "",
+    "css": "",
+    "re_pattern": ""
+  },
+  "detail": {
+    "article_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "title_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "place_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "speaker_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "release_time_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "holding_time_rule": {
+      "xpath": "",
+      "css": "",
+      "re_pattern": ""
+    },
+    "university": ""
+  }
+}
